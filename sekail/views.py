@@ -24,6 +24,7 @@ from .models import (
     Customer
     )
 
+
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
 
