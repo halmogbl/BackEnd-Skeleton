@@ -11,18 +11,17 @@ class User(AbstractUser):
 
 class Device(models.Model):
     user = models.name = models.ForeignKey(User, related_name='devices', on_delete=models.CASCADE)
-    # this have to be uniqe
     iemi_id = models.CharField(max_length=100, unique=True)    
 
 
 class Store(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='store')
-    store_id = models.CharField(max_length=30)
+    phone_number = models.CharField(max_length=30)
   
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
-    national_id = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=100)
     
 
 @receiver(post_save, sender=User)
