@@ -10,13 +10,15 @@ from django.conf import settings
 from sekail.views import (
     UserCreateAPIView,
     UserUpdateAPIView,
+    StoreCreateAPIView,
    
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('customer/login/', obtain_jwt_token, name='login'),
-    path('customer/register/', UserCreateAPIView.as_view(), name='register'),
+    path('user/login/', obtain_jwt_token, name='login'),
+    path('customer/register/', UserCreateAPIView.as_view(), name='customer-register'),
+    path('store/register/', StoreCreateAPIView.as_view(), name='store-register'),
 ]
 
 if settings.DEBUG:
