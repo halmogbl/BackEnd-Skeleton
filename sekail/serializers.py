@@ -8,7 +8,16 @@ from .models import (
     Customer
     )
 
-class UserCreateSerializer(serializers.ModelSerializer):
+
+def assign_token(user_instance):
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    payload = jwt_payload_handler(user_instance)
+    token = jwt_encode_handler(payload)
+    return token
+
+
+class CreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     token = serializers.CharField(allow_blank=True, read_only=True)
 
@@ -17,24 +26,27 @@ class UserCreateSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name',
                   'last_name', 'password', 'email', 'token']
 
+class UserCreateSerializer(CreateSerializer):
     def create(self, validated_data):
-        username = validated_data['username']
-        password = validated_data['password']
-        first_name = validated_data['first_name']
-        last_name = validated_data['last_name']
-        email = validated_data['email']
-        new_user = User(username=username , first_name=first_name, last_name=last_name, email=email)
-        new_user.set_password(password)
+        new_user = User(**validated_data)
+        new_user.set_password(validated_data['password'])
         new_user.save()
-
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        payload = jwt_payload_handler(new_user)
-        token = jwt_encode_handler(payload)
-
+        token = assign_token(new_user)
         validated_data["token"] = token
         return validated_data
+
+
+class StoreCreateSerializer(CreateSerializer):
+    def create(self, validated_data):
+        validated_data['is_store']=True
+        new_user = User(**validated_data)
+        new_user.set_password(validated_data['password'])
+        new_user.save()
+        token = assign_token(new_user)
+        validated_data["token"] = token
+        return validated_data
+
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
